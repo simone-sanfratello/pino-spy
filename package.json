@@ -1,0 +1,15 @@
+{
+  "name": "pino-spy",
+  "version": "0.0.1",
+  "description": "Utility for spying pino in tests",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --test test"
+  },
+  "keywords": [],
+  "author": "Simone Sanfratello <simone.sanfra@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "pino": "^8.17.2"
+  }
+}
