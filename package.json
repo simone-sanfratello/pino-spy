@@ -1,15 +1,26 @@
 {
   "name": "pino-spy",
   "version": "0.0.1",
-  "description": "Utility for spying pino in tests",
+  "description": "A commodity setup to spy on pino, for testing purpose only",
   "main": "index.js",
   "scripts": {
-    "test": "node --test test"
+    "test": "npm run lint && borp --coverage -p test/**/*.test.js",
+    "lint": "standard | snazzy",
+    "lint:fix": "standard --fix"
   },
-  "keywords": [],
+  "keywords": [
+    "test",
+    "testing"
+  ],
   "author": "Simone Sanfratello <simone.sanfra@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "pino": "^8.17.2"
+    "borp": "^0.9.0",
+    "pino": "^8.17.2",
+    "snazzy": "^9.0.0",
+    "standard": "^17.1.0"
+  },
+  "dependencies": {
+    "split2": "^4.2.0"
   }
 }

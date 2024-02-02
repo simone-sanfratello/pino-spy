@@ -1,28 +1,41 @@
-function pinoSpy(pinoOptions) {
+'use strict'
 
-  /*
-  TODO transparent mode
-import { BaseLogger } from 'pino'
-import split from 'split2'
+// const split = require('split2')
 
-function pinoSink(spyfunc: (...args: any[]) => void {
-  const result = split(data => {
-    try {
-      return JSON.parse(data)
-    } catch (err) {
-      // TODO not a json
-    }
-  })
-  result.on('data', data => {
-    return spyfunc(data)
-  })
-  return result
+const defaultOptions = {
+  mode: 'dummy'
 }
 
-*/
+function pinoSpy (pinoOptions = defaultOptions) {
+  // TODO validate options
 
-  // dummy mode
+  if (pinoOptions.mode === 'dummy') {
+    return dummy(pinoOptions)
+  }
+  if (pinoOptions.mode === 'transparent') {
+    return transparent(pinoOptions)
+  }
+}
 
+function transparent (options) {
+  // TODO
+
+//   function pinoSink(spyfunc: (...args)  {
+//   const result = split(data => {
+//     try {
+//       return JSON.parse(data)
+//     } catch (err) {
+//       // TODO not a json
+//     }
+//   })
+//   result.on('data', data => {
+//     return spyfunc(data)
+//   })
+//   return result
+// }
+}
+
+function dummy (options) {
   return {
     _trace: [],
     _debug: [],
@@ -40,7 +53,7 @@ function pinoSink(spyfunc: (...args: any[]) => void {
     fatal: function (...args) { this._fatal.push(args) },
     silent: () => { },
     child: function () { return this },
-    onChild: function () {  },
+    onChild: function () { },
 
     reset: function () {
       this._trace = []
