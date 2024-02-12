@@ -5,7 +5,7 @@ const { test } = require('node:test')
 const { pinoSpy } = require('../src')
 const pino = require('pino')
 
-test('dummy mode', t => {
+test('input mode', t => {
   t.test('should record logging calls', t => {
     const spy = pinoSpy()
     const levels = Object.values(pino().levels.labels)

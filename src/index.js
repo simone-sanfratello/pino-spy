@@ -4,7 +4,7 @@ const pino = require('pino')
 const writeStream = require('flush-write-stream')
 
 const defaultOptions = {
-  mode: 'dummy'
+  mode: 'input'
 }
 
 function pinoSpy (pinoOptions = defaultOptions) {
@@ -13,15 +13,15 @@ function pinoSpy (pinoOptions = defaultOptions) {
   // TODO forward pino options
   // TODO custom levels
 
-  if (pinoOptions.mode === 'dummy') {
-    return dummy(pinoOptions)
+  if (pinoOptions.mode === 'input') {
+    return input(pinoOptions)
   }
-  if (pinoOptions.mode === 'transparent') {
-    return transparent(pinoOptions)
+  if (pinoOptions.mode === 'output') {
+    return output(pinoOptions)
   }
 }
 
-function transparent (options) {
+function output (options) {
   // TODO accumulate
   // TODO custom parser, default 'json'
   const stream = writeStream(function (data, _enc, cb) {
@@ -29,9 +29,7 @@ function transparent (options) {
       const out = JSON.parse(data.toString('utf8'))
       // TODO filter on out
       spy['_' + pino.levels.labels[out.level]].push(out)
-      console.dir(out)
     } catch (err) {
-      // TODO test
       cb(new Error('PINO_SPY_UNABLE_TO_DECODE_OUTPUT', { cause: err }))
       return
     }
@@ -63,7 +61,7 @@ function transparent (options) {
   return spy
 }
 
-function dummy (options) {
+function input (options) {
   return {
     _trace: [],
     _debug: [],
