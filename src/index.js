@@ -1,6 +1,7 @@
 'use strict'
 
-// const split = require('split2')
+const pino = require('pino')
+const writeStream = require('flush-write-stream')
 
 const defaultOptions = {
   mode: 'dummy'
@@ -8,6 +9,9 @@ const defaultOptions = {
 
 function pinoSpy (pinoOptions = defaultOptions) {
   // TODO validate options
+  // TODO option output y/n
+  // TODO forward pino options
+  // TODO custom levels
 
   if (pinoOptions.mode === 'dummy') {
     return dummy(pinoOptions)
@@ -18,21 +22,45 @@ function pinoSpy (pinoOptions = defaultOptions) {
 }
 
 function transparent (options) {
-  // TODO
+  // TODO accumulate
+  // TODO custom parser, default 'json'
+  const stream = writeStream(function (data, _enc, cb) {
+    try {
+      const out = JSON.parse(data.toString('utf8'))
+      // TODO filter on out
+      spy['_' + pino.levels.labels[out.level]].push(out)
+      console.dir(out)
+    } catch (err) {
+      // TODO test
+      cb(new Error('PINO_SPY_UNABLE_TO_DECODE_OUTPUT', { cause: err }))
+      return
+    }
 
-//   function pinoSink(spyfunc: (...args)  {
-//   const result = split(data => {
-//     try {
-//       return JSON.parse(data)
-//     } catch (err) {
-//       // TODO not a json
-//     }
-//   })
-//   result.on('data', data => {
-//     return spyfunc(data)
-//   })
-//   return result
-// }
+    cb()
+  })
+  const streams = [stream]
+
+  // TODO use pino options
+  const spy = pino({}, pino.multistream(streams))
+
+  // extend spy
+  spy._trace = []
+  spy._debug = []
+  spy._info = []
+  spy._warn = []
+  spy._error = []
+  spy._fatal = []
+
+  spy.reset = function () {
+    this._trace = []
+    this._debug = []
+    this._info = []
+    this._warn = []
+    this._error = []
+    this._fatal = []
+  }
+
+  return spy
 }
 
 function dummy (options) {

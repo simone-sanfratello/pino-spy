@@ -18,8 +18,12 @@ TODO examples
 - esm support
 - ts support
   - jsdoc
-
+- option validation
+- 100% coverage
 - support pino custom levels
 
-see https://github.com/pinojs/pino/issues/837
+see 
 
+https://github.com/pinojs/pino/issues/837
+https://github.com/pinojs/pino/issues/1445
+https://github.com/fastify/help/issues/677#issuecomment-1456738991

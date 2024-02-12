@@ -5,9 +5,10 @@ const { test } = require('node:test')
 const { pinoSpy } = require('../src')
 const pino = require('pino')
 
-test('dummy mode', t => {
+test('transparent mode', t => {
   t.test('should record logging calls', t => {
-    const spy = pinoSpy()
+    // TODO here use pino instance or pino options > set min level
+    const spy = pinoSpy({ mode: 'transparent' })
     const levels = Object.values(pino().levels.labels)
 
     for (const level of levels) {
