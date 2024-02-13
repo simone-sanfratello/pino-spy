@@ -4,13 +4,7 @@ TODO description
 
 ### How to use it
 
-`pino-spy` works in 2 ways: `input` and `output`
-
-### input mode (default)
-
-In `input` mode, the tests purpose is to spy the **input** of the logger functions
-
-TODO review, significant example, working code
+`pino-spy` record in `input` and `output` of `pino` logging methods, so tests can assert what is sent to and what's the ouput - that's important especially having custom serializer (link).
 
 ```js
 test('the service should fail to on ...', async (t) => {
@@ -19,25 +13,8 @@ test('the service should fail to on ...', async (t) => {
 
   await app.listen()
 
-  assert.equal(logger._info_.at(-1), 'server started')
-```
-
-It's not relevant for the testing case how the input are serialized.
-
-### output mode
-
-In `output` mode, the tests purpose is to spy the **output** for the logger functions, to check the serialization along with the input.
-
-TODO review, significant example, working code
-
-```js
-test('the service should fail to on ...', async (t) => {
-  const logger = pinoSpy({ mode: 'output' })
-  const app = fastify({ logger })
-
-  await app.listen()
-
-  assert.deepEqual(logger._info_.at(-1), { msg: 'server started' })
+  assert.equal(logger._info.input.at(-1), 'server started')
+  assert.deepEqual(logger._info.output.at(-1), { msg: 'server started' })
 ```
 
 ---

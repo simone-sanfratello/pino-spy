@@ -7,28 +7,19 @@ const defaultOptions = {
   mode: 'input'
 }
 
-function pinoSpy (pinoOptions = defaultOptions) {
+function pinoSpy(pinoOptions = defaultOptions) {
   // TODO validate options
   // TODO option output y/n
   // TODO forward pino options
   // TODO custom levels
 
-  if (pinoOptions.mode === 'input') {
-    return input(pinoOptions)
-  }
-  if (pinoOptions.mode === 'output') {
-    return output(pinoOptions)
-  }
-}
-
-function output (options) {
   // TODO accumulate
   // TODO custom parser, default 'json'
   const stream = writeStream(function (data, _enc, cb) {
     try {
       const out = JSON.parse(data.toString('utf8'))
       // TODO filter on out
-      spy['_' + pino.levels.labels[out.level]].push(out)
+      spy['_' + pino.levels.labels[out.level]].output.push(out)
     } catch (err) {
       cb(new Error('PINO_SPY_UNABLE_TO_DECODE_OUTPUT', { cause: err }))
       return
@@ -41,55 +32,41 @@ function output (options) {
   // TODO use pino options
   const spy = pino({}, pino.multistream(streams))
 
+  // wrap pino logging methods
+  const orig = {
+    trace: spy.trace,
+    debug: spy.debug,
+    info: spy.info,
+    warn: spy.warn,
+    error: spy.error,
+    fatal: spy.fatal,
+  }
+  spy.trace = function (...args) { this._trace.input.push(args); spy.trace(...args) },
+  spy.debug = function (...args) { this._debug.input.push(args); spy.debug(...args) },
+  spy.info = function (...args) { this._info.input.push(args); spy.info(...args) },
+  spy.warn = function (...args) { this._warn.input.push(args); spy.warn(...args) },
+  spy.error = function (...args) { this._error.input.push(args); spy.error(...args) },
+  spy.fatal = function (...args) { this._fatal.input.push(args); spy.fatal(...args) },
+
   // extend spy
-  spy._trace = []
-  spy._debug = []
-  spy._info = []
-  spy._warn = []
-  spy._error = []
-  spy._fatal = []
+  spy._trace = { input: [], output: [] }
+  spy._debug = { input: [], output: [] }
+  spy._info = { input: [], output: [] }
+  spy._warn = { input: [], output: [] }
+  spy._error = { input: [], output: [] }
+  spy._fatal = { input: [], output: [] }
 
   spy.reset = function () {
-    this._trace = []
-    this._debug = []
-    this._info = []
-    this._warn = []
-    this._error = []
-    this._fatal = []
+    this._trace = { input: [], output: [] }
+    this._debug = { input: [], output: [] }
+    this._info = { input: [], output: [] }
+    this._warn = { input: [], output: [] }
+    this._error = { input: [], output: [] }
+    this._fatal = { input: [], output: [] }
   }
 
   return spy
 }
 
-function input (options) {
-  return {
-    _trace: [],
-    _debug: [],
-    _info: [],
-    _warn: [],
-    _error: [],
-    _fatal: [],
-
-    levels: {},
-    trace: function (...args) { this._trace.push(args) },
-    debug: function (...args) { this._debug.push(args) },
-    info: function (...args) { this._info.push(args) },
-    warn: function (...args) { this._warn.push(args) },
-    error: function (...args) { this._error.push(args) },
-    fatal: function (...args) { this._fatal.push(args) },
-    silent: () => { },
-    child: function () { return this },
-    onChild: function () { },
-
-    reset: function () {
-      this._trace = []
-      this._debug = []
-      this._info = []
-      this._warn = []
-      this._error = []
-      this._fatal = []
-    }
-  }
-}
 
 module.exports = { pinoSpy }
